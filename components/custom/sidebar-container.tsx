@@ -41,7 +41,7 @@ export const SidebarContainer = ({
 
 	const query = useQuery<NotionPage[]>({
 		queryKey: ['notion-pages'], queryFn: async () => {
-			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions/#NOTION_SEARCH_PAGES`, {
+			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json",
@@ -58,12 +58,16 @@ export const SidebarContainer = ({
 
 	const mutation = useMutation({
 		mutationFn: async () => {
-			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions/#NOTION_SEARCH_PAGES`, {
+			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json",
 					"Authorization": `Bearer ${paragonToken}`
-				}
+				},
+				body: JSON.stringify({
+					action: "NOTION_SEARCH_PAGES",
+					parameters: {}
+				}),
 			});
 			return await req.json();
 		},
@@ -71,8 +75,6 @@ export const SidebarContainer = ({
 			queryClient.invalidateQueries({ queryKey: ['notion-pages'] })
 		},
 	})
-
-	console.log("notion pages: ", query.data);
 
 	return (
 		<Sidebar>
