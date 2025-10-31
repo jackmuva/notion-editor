@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Button } from "../ui/button";
 import { ScrollText } from "lucide-react";
+import { useEditorStore } from "@/store/editorStore";
 
 export type NotionPage = {
 	id: string,
@@ -28,6 +29,7 @@ export const SidebarContainer = ({
 }) => {
 	const { paragon, user } = useParagon(paragonToken);
 	const queryClient = useQueryClient();
+	const { selectedPageId, setSelectedPageId } = useEditorStore((state) => state);
 
 	useEffect(() => {
 		if (user.authenticated && !user.integrations.notion?.enabled) {
@@ -87,11 +89,17 @@ export const SidebarContainer = ({
 					</div>
 				) : (
 					<SidebarGroup>
-						<div className="ml-4">
+						<div className="ml-2">
 							{query.data?.map((page) => {
 								return (
 									<div key={page.id}
-										className="flex space-x-1 items-center">
+										className={`flex space-x-1 items-center px-1 
+											rounded-xs cursor-pointer
+											${page.id === selectedPageId ? "bg-foreground/20"
+												: "hover:bg-foreground/10"}`}
+										onClick={() => {
+											setSelectedPageId(page.id);
+										}}>
 										<ScrollText size={15} />
 										<div className="line-clamp-1 w-fit">
 											{page.properties.title.title[0].plain_text}

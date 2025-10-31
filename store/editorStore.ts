@@ -5,7 +5,7 @@ export type EditorState = {
 	setSelectedPageId: (id: string) => void,
 }
 
-export const useEditorStore = create<EditorState>((set) => ({
+export const useEditorStore = create<EditorState>((set, get) => ({
 	selectedPageId: "",
 
 	setSelectedPageId: (id: string) => {
