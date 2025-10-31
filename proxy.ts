@@ -66,7 +66,7 @@ async function importPrivateKey(pem: string) {
 	}
 
 	// Fetch the part of the PEM string between header and footer
-	let pemContents = pem
+	const pemContents = pem
 		.substring(pemHeader.length, pem.length - pemFooter.length)
 		.replace(/[\s\n]+/g, ""); // Remove all whitespace and newline characters
 

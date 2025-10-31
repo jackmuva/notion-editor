@@ -31,14 +31,6 @@ export const SidebarContainer = ({
 	const queryClient = useQueryClient();
 	const { selectedPageId, setSelectedPageId } = useEditorStore((state) => state);
 
-	useEffect(() => {
-		if (user.authenticated && !user.integrations.notion?.enabled) {
-			paragon.connect("notion", {});
-		} else {
-			mutation.mutate();
-		}
-	}, [user, paragon]);
-
 	const query = useQuery<NotionPage[]>({
 		queryKey: ['notion-pages'], queryFn: async () => {
 			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
@@ -75,6 +67,14 @@ export const SidebarContainer = ({
 			queryClient.invalidateQueries({ queryKey: ['notion-pages'] })
 		},
 	})
+
+	useEffect(() => {
+		if (user.authenticated && !user.integrations.notion?.enabled) {
+			paragon.connect("notion", {});
+		} else {
+			mutation.mutate();
+		}
+	}, [user, paragon]);
 
 	return (
 		<Sidebar>
