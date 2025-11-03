@@ -1,7 +1,7 @@
 "use client";
 
 import useParagon from "@/hooks/useParagon";
-import { Sidebar, SidebarContent, SidebarGroup, useSidebar } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Button } from "../ui/button";
@@ -79,7 +79,7 @@ export const SidebarContainer = ({
 		} else {
 			mutation.mutate();
 		}
-	}, [user, paragon]);
+	}, [user]);
 
 	return (
 		<Sidebar>

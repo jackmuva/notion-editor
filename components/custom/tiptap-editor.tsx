@@ -13,13 +13,13 @@ export const TiptapEditor = ({
 }: {
 	paragonToken: string
 }) => {
-	const { paragon, user } = useParagon(paragonToken);
+	const { user } = useParagon(paragonToken);
 	const queryClient = useQueryClient();
 	const { selectedPageId } = useEditorStore((state) => state);
 	const editor = useEditor({
 		immediatelyRender: false,
 		extensions: [StarterKit, Markdown],
-		content: '## Contents',
+		content: '## New Page',
 		contentType: "markdown",
 	});
 
