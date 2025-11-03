@@ -9,6 +9,7 @@ export const config = {
 export async function proxy(request: NextRequest) {
 	const cookies = request.cookies;
 	const response = NextResponse.next();
+	console.log("token: ", cookies.get("paragonToken"));
 	if (!cookies.get("paragonToken")) {
 		response.cookies.set("paragonToken",
 			await paragonSessionToken(v4()),
@@ -32,7 +33,7 @@ export async function paragonSessionToken(sessionToken: string): Promise<string>
 		})
 			.setProtectedHeader({ alg: "RS256" })
 			.setIssuedAt()
-			.setExpirationTime("24h")
+			.setExpirationTime("1yr")
 			.sign(PRIVATE_KEY);
 
 		return paragonUserToken;

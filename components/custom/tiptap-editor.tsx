@@ -6,12 +6,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEditorStore } from '@/store/editorStore'
 import { useEffect } from 'react';
 import { Markdown } from '@tiptap/markdown'
+import useParagon from '@/hooks/useParagon';
 
 export const TiptapEditor = ({
 	paragonToken
 }: {
 	paragonToken: string
 }) => {
+	const { paragon, user } = useParagon(paragonToken);
 	const queryClient = useQueryClient();
 	const { selectedPageId } = useEditorStore((state) => state);
 	const editor = useEditor({
@@ -24,6 +26,9 @@ export const TiptapEditor = ({
 
 	const query = useQuery<{ markdownContent: string } | null>({
 		queryKey: ['page-content'], queryFn: async () => {
+			if (user.authenticated && !user.integrations.notion?.enabled) {
+				return { markdownContent: "" };
+			}
 			if (selectedPageId) {
 				const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
 					method: "POST",

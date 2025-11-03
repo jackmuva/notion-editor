@@ -33,6 +33,9 @@ export const SidebarContainer = ({
 
 	const query = useQuery<NotionPage[]>({
 		queryKey: ['notion-pages'], queryFn: async () => {
+			if (user.authenticated && !user.integrations.notion?.enabled) {
+				return [];
+			}
 			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
 				method: "POST",
 				headers: {
@@ -69,7 +72,9 @@ export const SidebarContainer = ({
 	})
 
 	useEffect(() => {
+		console.log("user: ", user);
 		if (user.authenticated && !user.integrations.notion?.enabled) {
+			console.log("connecting...");
 			paragon.connect("notion", {});
 		} else {
 			mutation.mutate();
