@@ -1,6 +1,5 @@
 "use client";
 import { useEditor, EditorContent } from '@tiptap/react'
-import { FloatingMenu, BubbleMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEditorStore } from '@/store/editorStore'
@@ -8,8 +7,7 @@ import { useEffect } from 'react';
 import { Markdown } from '@tiptap/markdown'
 import useParagon from '@/hooks/useParagon';
 import { PageCommand } from './page-command';
-import { Button } from '../ui/button';
-import { Textarea } from '../ui/textarea';
+import { EditorBubbleMenu } from './editor-bubble-menu';
 
 //TODO: Loading states needed
 export const TiptapEditor = ({
@@ -98,22 +96,7 @@ export const TiptapEditor = ({
 				<PageCommand paragonToken={paragonToken} editor={editor} />
 				<EditorContent className='md:ml-60 ProseMirror w-full max-w-[750px] h-5/6 overflow-y-auto no-scrollbar'
 					editor={editor} />
-				<FloatingMenu editor={editor} />
-				<BubbleMenu editor={editor} >
-					<div className='flex space-x-2 bg-transparent items-center'>
-						<Textarea className={"bg-background"} placeholder='how should notion editor ai edit the highlighted text?' />
-						<Button size={'sm'} variant={'default'}
-							className='' onClick={() => {
-								const selectedText = editor.state.doc.textBetween(
-									editor.state.selection.from,
-									editor.state.selection.to
-								);
-								console.log('Highlighted text:', selectedText);
-							}}>
-							Send
-						</Button>
-					</div>
-				</BubbleMenu>
+				<EditorBubbleMenu editor={editor} />
 			</>}
 		</div>
 	)
