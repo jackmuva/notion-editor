@@ -10,7 +10,7 @@ export default async function Home() {
 	return (
 		<div className="w-dvw h-dvh">
 			<SidebarContainer paragonToken={paragonToken} />
-			<TiptapEditor paragonToken={paragonToken} />
+			{/* <TiptapEditor paragonToken={paragonToken} /> */}
 		</div>
 	);
 }

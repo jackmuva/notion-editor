@@ -8,17 +8,26 @@ if (typeof window !== "undefined") {
 }
 
 export default function useParagon(paragonUserToken: string) {
-	const [user, setUser] = useState(paragon.getUser());
+	const [user, setUser] = useState(() => {
+		if (typeof window !== "undefined") {
+			return paragon.getUser();
+		}
+		return { authenticated: undefined, integrations: {} };
+	});
 	const [error, setError] = useState();
 
 	const updateUser = useCallback(() => {
-		const authedUser = paragon.getUser();
-		if (authedUser.authenticated) {
-			setUser({ ...authedUser });
+		if (typeof window !== "undefined") {
+			const authedUser = paragon.getUser();
+			if (authedUser.authenticated) {
+				setUser({ ...authedUser });
+			}
 		}
 	}, []);
 
 	useEffect(() => {
+		if (typeof window === "undefined") return;
+
 		paragon.subscribe(SDK_EVENT.ON_INTEGRATION_INSTALL, updateUser);
 		//@ts-expect-error paragon sdk
 		paragon.subscribe("onIntegrationUninstall", updateUser);
@@ -28,10 +37,12 @@ export default function useParagon(paragonUserToken: string) {
 			//@ts-expect-error paragon sdk
 			paragon.unsubscribe("onIntegrationUninstall", updateUser);
 		};
-	}, []);
+	}, [updateUser]);
 
 	useEffect(() => {
-		if (!error) {
+		if (typeof window === "undefined") return;
+
+		if (!error && paragonUserToken) {
 			console.log("paragon authenticating...")
 			paragon.authenticate(
 				process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID!,
@@ -42,7 +53,10 @@ export default function useParagon(paragonUserToken: string) {
 				if (authedUser.authenticated) {
 					setUser(authedUser);
 				}
-			}).catch(setError);
+			}).catch((err) => {
+				console.error("Paragon authentication failed:", err);
+				setError(err);
+			});
 		}
 	}, [error, paragonUserToken]);
 

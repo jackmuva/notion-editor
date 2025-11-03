@@ -3,7 +3,7 @@
 import useParagon from "@/hooks/useParagon";
 import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ScrollText } from "lucide-react";
 import { useEditorStore } from "@/store/editorStore";
@@ -30,6 +30,7 @@ export const SidebarContainer = ({
 	const { paragon, user } = useParagon(paragonToken);
 	const queryClient = useQueryClient();
 	const { selectedPageId, setSelectedPageId } = useEditorStore((state) => state);
+	const [isClient, setIsClient] = useState(false);
 
 	const query = useQuery<NotionPage[]>({
 		queryKey: ['notion-pages'], queryFn: async () => {
@@ -72,14 +73,42 @@ export const SidebarContainer = ({
 	})
 
 	useEffect(() => {
+		setIsClient(true);
+	}, []);
+
+	useEffect(() => {
+		// Ensure we're on the client side before using Paragon
+		if (typeof window === "undefined" || !isClient) return;
+
 		console.log("user: ", user);
+		if (user.authenticated === undefined) return;
 		if (user.authenticated && !user.integrations.notion?.enabled) {
 			console.log("connecting...");
-			paragon.connect("notion", {});
+			try {
+				paragon.connect("notion", {});
+			} catch (e) {
+				console.error("failed to connect notion: ", e);
+			}
 		} else {
 			mutation.mutate();
 		}
-	}, [user]);
+	}, [user, paragon, mutation, isClient]);
+
+	// Show loading state during hydration
+	if (!isClient) {
+		return (
+			<Sidebar>
+				<SidebarContent>
+					<h1 className="ml-2 mt-2 font-bold text-lg italic">
+						NotionEditor
+					</h1>
+					<div className="w-full h-full flex justify-center items-center">
+						<div>Loading...</div>
+					</div>
+				</SidebarContent>
+			</Sidebar>
+		);
+	}
 
 	return (
 		<Sidebar>
@@ -89,10 +118,10 @@ export const SidebarContainer = ({
 				</h1>
 				{user.authenticated && !user.integrations.notion?.enabled ? (
 					<div className="w-full h-full flex justify-center items-center">
-						<Button className="w-fit"
-							onClick={() => paragon.connect("notion", {})}>
-							Connect Notion
-						</Button>
+						{/* <Button className="w-fit" */}
+						{/* 	onClick={() => paragon.connect("notion", {})}> */}
+						{/* 	Connect Notion */}
+						{/* </Button> */}
 					</div>
 				) : (
 					<SidebarGroup>
