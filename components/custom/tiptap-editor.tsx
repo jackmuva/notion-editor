@@ -9,6 +9,7 @@ import { Markdown } from '@tiptap/markdown'
 import useParagon from '@/hooks/useParagon';
 import { PageCommand } from './page-command';
 import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 
 //TODO: Loading states needed
 export const TiptapEditor = ({
@@ -99,7 +100,8 @@ export const TiptapEditor = ({
 					editor={editor} />
 				<FloatingMenu editor={editor} />
 				<BubbleMenu editor={editor} >
-					<div className='z-20 '>
+					<div className='flex space-x-2 bg-transparent items-center'>
+						<Textarea className={"bg-background"} placeholder='how should notion editor ai edit the highlighted text?' />
 						<Button size={'sm'} variant={'default'}
 							className='' onClick={() => {
 								const selectedText = editor.state.doc.textBetween(
