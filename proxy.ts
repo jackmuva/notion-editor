@@ -6,6 +6,7 @@ export const config = {
 	matcher: '/',
 }
 
+//TODO:a session token thats sign and verify to revalidate paragon token
 export async function proxy(request: NextRequest) {
 	const cookies = request.cookies;
 	const response = NextResponse.next();
@@ -18,7 +19,7 @@ export async function proxy(request: NextRequest) {
 				secure: true,
 				path: "/",
 				sameSite: "lax",
-				expires: new Date(Date.now() + (23 * 60 * 60 * 1000)),
+				expires: new Date(Date.now() + (365 * 24 * 60 * 60 * 1000)),
 			})
 	}
 	return response;

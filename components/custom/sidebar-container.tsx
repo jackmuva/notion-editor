@@ -89,7 +89,7 @@ export const SidebarContainer = ({
 		} else {
 			mutation.mutate();
 		}
-	}, [user, paragon, mutation, isClient]);
+	}, [user, paragon, isClient]);
 
 	if (!isClient) {
 		return (
