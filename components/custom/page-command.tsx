@@ -1,47 +1,27 @@
 import { useEditorStore } from "@/store/editorStore";
 import { Button } from "../ui/button";
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Editor } from "@tiptap/react";
+import { useState } from "react";
 
 export const PageCommand = ({
 	paragonToken,
 	editor,
+	refetchContent,
 }: {
 	paragonToken: string,
 	editor: Editor,
+	refetchContent: () => Promise<any>,
 }) => {
 	const { selectedPageId } = useEditorStore((state) => state);
-	const queryClient = useQueryClient();
-
-	const mutation = useMutation<{ markdownContent: string } | null>({
-		mutationFn: async () => {
-			if (selectedPageId) {
-				const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
-					method: "POST",
-					headers: {
-						"Content-type": "application/json",
-						"Authorization": `Bearer ${paragonToken}`
-					},
-					body: JSON.stringify({
-						action: "NOTION_GET_PAGE_AS_MARKDOWN",
-						parameters: {
-							pageId: selectedPageId
-						}
-					}),
-				});
-				return await req.json();
-			} else {
-				return null;
-			}
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['page-content'] })
-		},
-	});
+	const [pushing, setPushing] = useState<boolean>(false);
 
 	const pushChanges = async () => {
-		const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
+		setPushing(true);
+		setTimeout(() => {
+			setPushing(false);
+		}, 7 * 1000)
+		await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json",
@@ -56,21 +36,22 @@ export const PageCommand = ({
 				}
 			}),
 		});
-		const res = await req.json();
-		console.log("pushed: ", res);
 	}
 
 	return (
 		<div className="absolute top-0 right-0 p-4 flex space-x-2">
 			<Button variant={"outline"} size={"sm"}
-				onClick={() => mutation.mutate()}>
+				onClick={() => {
+					refetchContent();
+				}}>
 				<ArrowDownToLine size={10} />
 				Pull Notion Updates
 			</Button>
 			<Button variant={"outline"} size={"sm"}
-				onClick={() => pushChanges()} >
+				onClick={() => pushChanges()}
+				className={`${pushing ? "hover:bg-indigo-200 bg-indigo-300" : ""}`}>
 				<ArrowUpFromLine size={10} />
-				Push Editor Changes
+				{pushing ? "Pushing Changes..." : "Push Editor Changes"}
 			</Button>
 		</div>
 	);

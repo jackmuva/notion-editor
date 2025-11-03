@@ -28,7 +28,6 @@ export const SidebarContainer = ({
 	paragonToken: string
 }) => {
 	const { paragon, user } = useParagon(paragonToken);
-	const queryClient = useQueryClient();
 	const { selectedPageId, setSelectedPageId } = useEditorStore((state) => state);
 	const [isClient, setIsClient] = useState(false);
 
@@ -49,31 +48,8 @@ export const SidebarContainer = ({
 				}),
 			});
 			return await req.json();
-		}
+		}, enabled: !!user.authenticated
 	});
-
-	const mutation = useMutation({
-		mutationFn: async () => {
-			const req = await fetch(`https://actionkit.useparagon.com/projects/${process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID}/actions`, {
-				method: "POST",
-				headers: {
-					"Content-type": "application/json",
-					"Authorization": `Bearer ${paragonToken}`
-				},
-				body: JSON.stringify({
-					action: "NOTION_SEARCH_PAGES",
-					parameters: {}
-				}),
-			});
-			return await req.json();
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['notion-pages'] });
-			if (query.data) {
-				setSelectedPageId(query.data[query.data.length - 1].id)
-			}
-		},
-	})
 
 	useEffect(() => {
 		setIsClient(true);
@@ -88,11 +64,14 @@ export const SidebarContainer = ({
 			} catch (e) {
 				console.error("failed to connect notion: ", e);
 			}
-		} else {
-			mutation.mutate();
-
 		}
 	}, [user, paragon, isClient]);
+
+	useEffect(() => {
+		if (query.data) {
+			setSelectedPageId(query.data[0].id);
+		}
+	}, [query.data])
 
 	if (!isClient) {
 		return (
