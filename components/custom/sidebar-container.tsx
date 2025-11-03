@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { ScrollText } from "lucide-react";
+import { StickyNote } from "lucide-react";
 import { useEditorStore } from "@/store/editorStore";
 
 export type NotionPage = {
@@ -67,8 +67,11 @@ export const SidebarContainer = ({
 			});
 			return await req.json();
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['notion-pages'] })
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ['notion-pages'] });
+			if (query.data) {
+				setSelectedPageId(query.data[query.data.length - 1].id)
+			}
 		},
 	})
 
@@ -78,7 +81,6 @@ export const SidebarContainer = ({
 
 	useEffect(() => {
 		if (typeof window === "undefined" || !isClient) return;
-
 		if (user.authenticated === undefined) return;
 		if (user.authenticated && !user.integrations.notion?.enabled) {
 			try {
@@ -88,6 +90,7 @@ export const SidebarContainer = ({
 			}
 		} else {
 			mutation.mutate();
+
 		}
 	}, [user, paragon, isClient]);
 
@@ -105,8 +108,6 @@ export const SidebarContainer = ({
 			</Sidebar>
 		);
 	}
-
-	console.log("queried data: ", query.data);
 	return (
 		<Sidebar>
 			<SidebarContent>
@@ -133,7 +134,7 @@ export const SidebarContainer = ({
 										onClick={() => {
 											setSelectedPageId(page.id);
 										}}>
-										<ScrollText size={15} />
+										<StickyNote size={15} />
 										<div className="line-clamp-1 w-fit">
 											{page.properties.title.title[0].plain_text}
 										</div>

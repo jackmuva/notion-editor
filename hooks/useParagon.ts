@@ -43,12 +43,10 @@ export default function useParagon(paragonUserToken: string) {
 		if (typeof window === "undefined") return;
 
 		if (!error && paragonUserToken) {
-			console.log("paragon authenticating...")
 			paragon.authenticate(
 				process.env.NEXT_PUBLIC_PARAGON_PROJECT_ID!,
 				paragonUserToken
 			).then(() => {
-				console.log("setting user...")
 				const authedUser = paragon.getUser();
 				if (authedUser.authenticated) {
 					setUser(authedUser);

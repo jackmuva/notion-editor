@@ -7,7 +7,10 @@ import { useEditorStore } from '@/store/editorStore'
 import { useEffect } from 'react';
 import { Markdown } from '@tiptap/markdown'
 import useParagon from '@/hooks/useParagon';
+import { PageCommand } from './page-command';
+import { Button } from '../ui/button';
 
+//TODO: Loading states needed
 export const TiptapEditor = ({
 	paragonToken
 }: {
@@ -78,7 +81,6 @@ export const TiptapEditor = ({
 
 	useEffect(() => {
 		if (editor && query.data?.markdownContent) {
-			console.log("setting content");
 			editor.commands.setContent(query.data?.markdownContent, {
 				contentType: "markdown",
 			});
@@ -89,13 +91,27 @@ export const TiptapEditor = ({
 		mutation.mutate();
 	}, [selectedPageId])
 
-	console.log("markdown contents: ", query.data);
-
 	return (
-		<div className='w-full h-full flex flex-col justify-center items-center'>
+		<div className='w-full h-full flex flex-col justify-center items-center relative'>
 			{editor && <>
+				<PageCommand paragonToken={paragonToken} editor={editor} />
 				<EditorContent className='md:ml-60 ProseMirror w-full max-w-[750px] h-5/6 overflow-y-auto no-scrollbar'
 					editor={editor} />
+				<FloatingMenu editor={editor} />
+				<BubbleMenu editor={editor} >
+					<div className='z-20 '>
+						<Button size={'sm'} variant={'default'}
+							className='' onClick={() => {
+								const selectedText = editor.state.doc.textBetween(
+									editor.state.selection.from,
+									editor.state.selection.to
+								);
+								console.log('Highlighted text:', selectedText);
+							}}>
+							Send
+						</Button>
+					</div>
+				</BubbleMenu>
 			</>}
 		</div>
 	)
