@@ -1,5 +1,4 @@
 "use server";
-import Image from "next/image";
 import { cookies } from 'next/headers'
 import { SidebarContainer } from "@/components/custom/sidebar-container";
 import { TiptapEditor } from "@/components/custom/tiptap-editor";
@@ -10,7 +9,7 @@ export default async function Home() {
 	return (
 		<div className="w-dvw h-dvh">
 			<SidebarContainer paragonToken={paragonToken} />
-			{/* <TiptapEditor paragonToken={paragonToken} /> */}
+			<TiptapEditor paragonToken={paragonToken} />
 		</div>
 	);
 }

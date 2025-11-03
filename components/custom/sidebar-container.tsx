@@ -77,13 +77,10 @@ export const SidebarContainer = ({
 	}, []);
 
 	useEffect(() => {
-		// Ensure we're on the client side before using Paragon
 		if (typeof window === "undefined" || !isClient) return;
 
-		console.log("user: ", user);
 		if (user.authenticated === undefined) return;
 		if (user.authenticated && !user.integrations.notion?.enabled) {
-			console.log("connecting...");
 			try {
 				paragon.connect("notion", {});
 			} catch (e) {
@@ -94,7 +91,6 @@ export const SidebarContainer = ({
 		}
 	}, [user, paragon, mutation, isClient]);
 
-	// Show loading state during hydration
 	if (!isClient) {
 		return (
 			<Sidebar>
@@ -110,6 +106,7 @@ export const SidebarContainer = ({
 		);
 	}
 
+	console.log("queried data: ", query.data);
 	return (
 		<Sidebar>
 			<SidebarContent>
@@ -118,10 +115,10 @@ export const SidebarContainer = ({
 				</h1>
 				{user.authenticated && !user.integrations.notion?.enabled ? (
 					<div className="w-full h-full flex justify-center items-center">
-						{/* <Button className="w-fit" */}
-						{/* 	onClick={() => paragon.connect("notion", {})}> */}
-						{/* 	Connect Notion */}
-						{/* </Button> */}
+						<Button className="w-fit"
+							onClick={() => paragon.connect("notion", {})}>
+							Connect Notion
+						</Button>
 					</div>
 				) : (
 					<SidebarGroup>
