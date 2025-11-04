@@ -68,7 +68,7 @@ export const SidebarContainer = ({
 	}, [user, paragon, isClient]);
 
 	useEffect(() => {
-		if (query.data) {
+		if (query.data && query.data.length > 0) {
 			setSelectedPageId(query.data[0].id);
 		}
 	}, [query.data])

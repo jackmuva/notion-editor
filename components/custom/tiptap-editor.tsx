@@ -3,18 +3,22 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useEditorStore } from '@/store/editorStore'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Markdown } from '@tiptap/markdown'
 import useParagon from '@/hooks/useParagon';
 import { PageCommand } from './page-command';
 import { EditorBubbleMenu } from './editor-bubble-menu';
 
 const LoadingSkeleton = () => {
+	const [isClient, setIsClient] = useState(false);
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 	const widths = ['w-full', 'w-5/6', 'w-4/5', 'w-3/4', 'w-2/3', 'w-3/5', 'w-1/2'];
 
 	return (
 		<div className='flex flex-col space-y-4 p-4'>
-			{Array(7).fill(0).map((_, index) => {
+			{isClient && Array(7).fill(0).map((_, index) => {
 				const randomWidth = widths[Math.floor(Math.random() * widths.length)];
 				return (
 					<div
